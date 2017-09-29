@@ -13,6 +13,10 @@ using std::size_t;
 #include <functional>
 using std::function;
 #include <iostream>
+#include <vector>
+using std::vector;
+#include <algorithm>
+#include <iterator>
 
 
 // **************************************************************** // *
@@ -101,9 +105,24 @@ template <typename RAIter>
 size_t uniqueCount(RAIter first,
                    RAIter last)
 {
-    return size_t(42);  // Dummy return, so that it compiles
-                        // Elminate this return statement!
-    // TODO: Write this!!!
+	vector<std::iterator_traits<RAIter>::value_type> foundElements;
+	size_t numberFound = 0;
+	size_t timesThroughLoop = 0;
+	while (first < last)
+	{
+		
+		//std::cout << !std::binary_search(foundElements.begin(), foundElements.end(), *first) << std::endl;
+		if (!std::binary_search(foundElements.begin(), foundElements.end(), *first))
+		{
+			foundElements.push_back(*first);
+			++numberFound;
+		}
+		std::cout << *first << " " << foundElements.size() << std::endl;
+
+		first++;
+	}
+
+    return numberFound;  
 }
 
 
