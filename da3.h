@@ -12,7 +12,6 @@
 using std::size_t;
 #include <functional>
 using std::function;
-#include <iostream>
 #include <vector>
 using std::vector;
 #include <algorithm>
@@ -67,65 +66,83 @@ struct LLNode {                                                     // *
 // Do not alter the lines above                                     // *
 // **************************************************************** // *
 
-
+//lookUp (by Mark Underwood)
+//Requirements on Types: None
+//Exceptions: May throw out_of_range
+//Pre: head must point to either nullptr or a new LLNode object.
+//Post: Returns the data from the node that is a distance of [index] nodes from head. 
 template <typename ValueType>
 ValueType lookUp(const LLNode<ValueType> * head,
                  size_t index)
 {
-	auto ptr = head;
-
-	if (ptr == nullptr)
+	//Is the list empty?
+	if (head == nullptr)
 	{
 		throw out_of_range("Index out of range");
 	}
 
 	for (size_t i = 0; i < index; ++i)
 	{
-		if (ptr->_next != nullptr)
+		//Is this the last node in the list?
+		if (head->_next != nullptr)
 		{
-			ptr = ptr->_next;
+			head = head->_next;
 		}
-		else if (i != index)
+		else if (i != index) //If this is the last node in the list, are we trying to seek past it?
 		{
 			throw out_of_range("Index out of range");
 		}
 	}
 
-	return ptr->_data;
+	return head->_data;
 }
 
-
+//callBetween (by Mark Underwood)
+//Exceptions: May throw any exception that the functions passed as arguments can throw.
+//Pre: Any functions passed as start, middle, or finish must not return anything.
+//Post: Functions start, middle, and finish are all called in precisely that order.
 // Implementation in source file
 void callBetween(const function<void()> & start,
                  const function<void()> & middle,
                  const function<void()> & finish);
 
-
+//uniqueCount (by Mark Underwood)
+//Requirements on Types:
+//	-Value type of RAIter must have operators <, ==, and =.
+//	-Value type of RAIter must be default and copy constructable.
+//Exceptions: Does not throw
+//Pre: first < last.
+//Post: Returns number of unique elements in a given range.
 template <typename RAIter>
 size_t uniqueCount(RAIter first,
                    RAIter last)
 {
+	std::sort(first, last); //Get range ready for binary search
+
 	vector<std::iterator_traits<RAIter>::value_type> foundElements;
-	size_t numberFound = 0;
-	size_t timesThroughLoop = 0;
+	size_t uniqueFound = 0;
+
+	//Go through every element in the range
 	while (first < last)
 	{
-		
-		//std::cout << !std::binary_search(foundElements.begin(), foundElements.end(), *first) << std::endl;
+		//Have we found this number before?
 		if (!std::binary_search(foundElements.begin(), foundElements.end(), *first))
 		{
-			foundElements.push_back(*first);
-			++numberFound;
+			//If not, add it to the list
+			foundElements.push_back(*first); 
+			++uniqueFound;
 		}
-		std::cout << *first << " " << foundElements.size() << std::endl;
 
 		first++;
 	}
 
-    return numberFound;  
+    return uniqueFound;  
 }
 
-
+//gcd (by Mark Underwood)
+//Exceptions: Does not throw
+//Pre: a and b must be positive.
+//Post: Returns the greatest number that can evenly divide both a and b.
 // Implementation in source file
 int gcd(int a,
         int b);

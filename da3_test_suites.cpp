@@ -760,7 +760,6 @@ TEST_CASE( "Function template uniqueCount",
 
     SECTION( "Range of size 3, two values" )
     {
-		std::cout << "#" << std::endl;
         size_t && result = uniqueCount(di.rbegin()+8, di.rbegin()+11);
         INFO( "uniqueCount must return 2" );
         REQUIRE( result == 2 );

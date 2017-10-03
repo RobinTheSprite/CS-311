@@ -8,6 +8,8 @@ Contains definitions of various da3 functions.
 #include <functional>
 using std::function;
 
+//callBetween
+//Documentation in header file
 void callBetween(const function<void()> & start,
 	const function<void()> & middle,
 	const function<void()> & finish)
@@ -32,11 +34,22 @@ void callBetween(const function<void()> & start,
 	}
 	
 	finish();
-
 }
 
-
+//gcd
+//Documentation in header file
 int gcd(int a, int b)
 {
-	return 0;
+	if (a == 0)
+	{
+		return b;
+	}
+
+	if (a > b)
+	{
+		return gcd(b, a);
+	}
+
+	return gcd(b % a, a);
+	
 }
