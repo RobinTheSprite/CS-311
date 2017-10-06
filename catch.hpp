@@ -689,13 +689,13 @@ namespace Catch {
 
     struct ITestCaseRegistry {
         virtual ~ITestCaseRegistry();
-        virtual std::vector<TestCase> const& getAllTests() const = 0;
-        virtual std::vector<TestCase> const& getAllTestsSorted( IConfig const& config ) const = 0;
+        virtual std::deque<TestCase> const& getAllTests() const = 0;
+        virtual std::deque<TestCase> const& getAllTestsSorted( IConfig const& config ) const = 0;
     };
 
     bool matchTest( TestCase const& testCase, TestSpec const& testSpec, IConfig const& config );
-    std::vector<TestCase> filterTests( std::vector<TestCase> const& testCases, TestSpec const& testSpec, IConfig const& config );
-    std::vector<TestCase> const& getAllTestCasesSorted( IConfig const& config );
+    std::deque<TestCase> filterTests( std::deque<TestCase> const& testCases, TestSpec const& testSpec, IConfig const& config );
+    std::deque<TestCase> const& getAllTestCasesSorted( IConfig const& config );
 
 }
 
@@ -1095,7 +1095,7 @@ namespace Matchers {
                 return *this;
             }
 
-            std::vector<MatcherBase<ArgT> const*> m_matchers;
+            std::deque<MatcherBase<ArgT> const*> m_matchers;
         };
         template<typename ArgT>
         struct MatchAnyOf : MatcherBase<ArgT> {
@@ -1125,7 +1125,7 @@ namespace Matchers {
                 return *this;
             }
 
-            std::vector<MatcherBase<ArgT> const*> m_matchers;
+            std::deque<MatcherBase<ArgT> const*> m_matchers;
         };
 
         template<typename ArgT>
@@ -1654,7 +1654,7 @@ namespace Detail {
 //};
 
 template<typename T, typename Allocator>
-std::string toString( std::vector<T,Allocator> const& v ) {
+std::string toString( std::deque<T,Allocator> const& v ) {
     return Detail::rangeToString( v.begin(), v.end() );
 }
 
@@ -2474,7 +2474,7 @@ public:
     }
 
 private:
-    std::vector<T> m_values;
+    std::deque<T> m_values;
 };
 
 template<typename T>
@@ -2502,8 +2502,8 @@ public:
     operator T () const {
         size_t overallIndex = getCurrentContext().getGeneratorIndex( m_fileInfo, m_totalSize );
 
-        typename std::vector<const IGenerator<T>*>::const_iterator it = m_composed.begin();
-        typename std::vector<const IGenerator<T>*>::const_iterator itEnd = m_composed.end();
+        typename std::deque<const IGenerator<T>*>::const_iterator it = m_composed.begin();
+        typename std::deque<const IGenerator<T>*>::const_iterator itEnd = m_composed.end();
         for( size_t index = 0; it != itEnd; ++it )
         {
             const IGenerator<T>* generator = *it;
@@ -2542,7 +2542,7 @@ private:
         other.m_composed.clear();
     }
 
-    std::vector<const IGenerator<T>*> m_composed;
+    std::deque<const IGenerator<T>*> m_composed;
     std::string m_fileInfo;
     size_t m_totalSize;
 };
@@ -2652,7 +2652,7 @@ namespace Catch {
     typedef std::string(*exceptionTranslateFunction)();
 
     struct IExceptionTranslator;
-    typedef std::vector<const IExceptionTranslator*> ExceptionTranslators;
+    typedef std::deque<const IExceptionTranslator*> ExceptionTranslators;
 
     struct IExceptionTranslator {
         virtual ~IExceptionTranslator();
@@ -2961,11 +2961,11 @@ namespace Matchers {
     namespace Vector {
 
         template<typename T>
-        struct ContainsElementMatcher : MatcherBase<std::vector<T>, T> {
+        struct ContainsElementMatcher : MatcherBase<std::deque<T>, T> {
 
             ContainsElementMatcher(T const &comparator) : m_comparator( comparator) {}
 
-            bool match(std::vector<T> const &v) const CATCH_OVERRIDE {
+            bool match(std::deque<T> const &v) const CATCH_OVERRIDE {
                 return std::find(v.begin(), v.end(), m_comparator) != v.end();
             }
 
@@ -2977,11 +2977,11 @@ namespace Matchers {
         };
 
         template<typename T>
-        struct ContainsMatcher : MatcherBase<std::vector<T>, std::vector<T> > {
+        struct ContainsMatcher : MatcherBase<std::deque<T>, std::deque<T> > {
 
-            ContainsMatcher(std::vector<T> const &comparator) : m_comparator( comparator ) {}
+            ContainsMatcher(std::deque<T> const &comparator) : m_comparator( comparator ) {}
 
-            bool match(std::vector<T> const &v) const CATCH_OVERRIDE {
+            bool match(std::deque<T> const &v) const CATCH_OVERRIDE {
                 // !TBD: see note in EqualsMatcher
                 if (m_comparator.size() > v.size())
                     return false;
@@ -2994,15 +2994,15 @@ namespace Matchers {
                 return "Contains: " + Catch::toString( m_comparator );
             }
 
-            std::vector<T> const& m_comparator;
+            std::deque<T> const& m_comparator;
         };
 
         template<typename T>
-        struct EqualsMatcher : MatcherBase<std::vector<T>, std::vector<T> > {
+        struct EqualsMatcher : MatcherBase<std::deque<T>, std::deque<T> > {
 
-            EqualsMatcher(std::vector<T> const &comparator) : m_comparator( comparator ) {}
+            EqualsMatcher(std::deque<T> const &comparator) : m_comparator( comparator ) {}
 
-            bool match(std::vector<T> const &v) const CATCH_OVERRIDE {
+            bool match(std::deque<T> const &v) const CATCH_OVERRIDE {
                 // !TBD: This currently works if all elements can be compared using !=
                 // - a more general approach would be via a compare template that defaults
                 // to using !=. but could be specialised for, e.g. std::vector<T> etc
@@ -3017,7 +3017,7 @@ namespace Matchers {
             virtual std::string describe() const CATCH_OVERRIDE {
                 return "Equals: " + Catch::toString( m_comparator );
             }
-            std::vector<T> const& m_comparator;
+            std::deque<T> const& m_comparator;
         };
 
     } // namespace Vector
@@ -3026,7 +3026,7 @@ namespace Matchers {
     // This allows the types to be inferred
 
     template<typename T>
-    Vector::ContainsMatcher<T> Contains( std::vector<T> const& comparator ) {
+    Vector::ContainsMatcher<T> Contains( std::deque<T> const& comparator ) {
         return Vector::ContainsMatcher<T>( comparator );
     }
 
@@ -3036,7 +3036,7 @@ namespace Matchers {
     }
 
     template<typename T>
-    Vector::EqualsMatcher<T> Equals( std::vector<T> const& comparator ) {
+    Vector::EqualsMatcher<T> Equals( std::deque<T> const& comparator ) {
         return Vector::EqualsMatcher<T>( comparator );
     }
 
