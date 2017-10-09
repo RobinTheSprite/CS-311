@@ -1,5 +1,5 @@
 /*
-spiderruns.h
+counthsr.h
 Mark Underwood
 10.4.17
 Contains declarations of functions for the Holey Spider Runs problem.
@@ -8,10 +8,13 @@ Contains declarations of functions for the Holey Spider Runs problem.
 #ifndef FILE_SPIDERRUNS_H_INCLUDED
 #define FILE_SPIDERRUNS_H_INCLUDED
 
-#include <vector>
-using std::vector;
+#include <deque>
+using std::deque;
 
-void countHSR();
+size_t countHSR(int,int,
+			    int,int,
+			    int,int,
+			    int,int);
 
 class Board
 {
@@ -20,11 +23,17 @@ public:
 	bool & operator()(int x, int y);
 	size_t width() const;
 	size_t height() const;
+	int finishx() const;
+	int finishy() const;
+	size_t & numOfSolutions();
+	bool allOnes();
 	void print();
+	Board & operator=(const Board & lhs) = default;
 private:
-	vector<vector<bool>> _board;
+	deque<deque<bool>> _board;
 	size_t _width;
 	size_t _height;
+	size_t _numOfSolutions;
 };
 
 #endif // !FILE_SPIDERRUNS_H_INCLUDED
