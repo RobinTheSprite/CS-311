@@ -7,14 +7,11 @@ Contains definitions of functions for Holey Spider Runs problem.
 
 #include "counthsr.h"
 #include <iostream>
-#include <deque>
-using std::deque;
 using std::cout;
 using std::endl;
 #include <algorithm>
 #include <deque>
 using std::deque;
-#include <unordered_map>
 
 using boardType = deque<deque<bool>>;
 
@@ -23,9 +20,6 @@ Board::Board(int x, int y)
 	_width = x;
 	_height = y;
 	boardType board((y + 2), deque<bool>(x + 2));
-	_numOfSolutions = 0;
-	boardType board((x + 2), deque<bool>(y + 2));
->>>>>>> a1629c24f9c4f675bc612316e9c60eb5954c8960
 	for (size_t col = 0; col < board.size(); ++col)
 	{
 		for (size_t row = 0; row < board[col].size(); ++row)
@@ -46,7 +40,7 @@ Board::Board(int x, int y)
 
 bool & Board::operator()(int x, int y)
 {
-	return _board[x][y];
+	return _board[y][x];
 }
 
 size_t Board::width() const
@@ -58,12 +52,6 @@ size_t Board::height() const
 {
 	return _height;
 }
-
-size_t & Board::numOfSolutions()
-{
-	return _numOfSolutions;
-}
-
 
 void Board::print()
 {
@@ -77,21 +65,18 @@ void Board::print()
 	}
 }
 
-bool Board::allOnes()
+size_t countHSR_recurse(Board & board, 
+						const int & finishx, const int & finishy, 
+						std::pair<int, int> & spider,
+						int & squaresLeft)
 {
-	size_t rowsFullOfOnes = 0;
-	for (auto row : _board)
+	//Base Case
+	if ((spider.first == finishx) && (spider.second == finishy) && squaresLeft == 0)
 	{
-		if (std::find(row.begin(), row.end(), 0) == row.end())
-		{
-			++rowsFullOfOnes;
-		}
-	}
-	return rowsFullOfOnes == _board.size();
-}
-
-void pickADirection(Board & board, std::pair<int, int> spider)
-{
+		return 1;
+	} 
+	
+	//Recursive Case
 	std::deque<std::pair<int, int>> allPossibleDirections =
 	{	std::make_pair(spider.first, spider.second + 1),
 		std::make_pair(spider.first, spider.second - 1),
@@ -105,70 +90,21 @@ void pickADirection(Board & board, std::pair<int, int> spider)
 		std::make_pair(spider.first - 1, spider.second + 1),
 		std::make_pair(spider.first + 1, spider.second - 1) };
 
-	//if (board(spider.first, spider.second + 1) == 0)
-	//{ }
-	//
-	//if (board(spider.first, spider.second - 1) == 0)
-	//{ }
-	//
-	//if (board(spider.first + 1, spider.second) == 0)
-	//{ }
-	//
-	//if (board(spider.first - 1, spider.second) == 0)
-	//{ }
-	//
-	//if (board(spider.first + 1, spider.second + 1) == 0)
-	//{ }
-	//
-	//if (board(spider.first - 1, spider.second - 1) == 0)
-	//{ }
-	//
-	//if (board(spider.first - 1, spider.second + 1) == 0)
-	//{ }
-	//
-	//if (board(spider.first + 1, spider.second - 1) == 0)
-	//{ }
-}
-
-
-
-size_t countHSR_recurse(Board & board, 
-						const int & finishx, const int & finishy, 
-						std::pair<int, int> & spider)
-{
-	board.print();
-	cout << endl;
-
-	//Base Case
-	if ((spider.first == finishx) && (spider.second == finishy) && board.allOnes())
-	{
-		return 1;
-	} //Recursive Cases
-
-	std::deque<std::pair<int, int>> allPossibleDirections =
-	{ std::make_pair(spider.first, spider.second + 1),
-		std::make_pair(spider.first, spider.second - 1),
-
-		std::make_pair(spider.first + 1, spider.second),
-		std::make_pair(spider.first - 1, spider.second),
-
-		std::make_pair(spider.first + 1, spider.second + 1),
-		std::make_pair(spider.first - 1, spider.second - 1),
-
-		std::make_pair(spider.first - 1, spider.second + 1),
-		std::make_pair(spider.first + 1, spider.second - 1) };
-
 	int numOfSols = 0;
-	std::pair<int, int> savedSpiderLoc = spider;
 
-	for (auto pair : allPossibleDirections)
+	for (auto currentPair : allPossibleDirections)
 	{
-		if (board(pair.first, pair.second) == 0)
+		if (board(currentPair.first, currentPair.second) == 0)
 		{
 			std::pair<int, int> savedSpiderLoc = spider;
-			spider = pair;
+
+			spider = currentPair;
 			board(spider.first, spider.second) = 1;
-			numOfSols += countHSR_recurse(board, finishx, finishy, spider);
+			--squaresLeft;
+
+			numOfSols += countHSR_recurse(board, finishx, finishy, spider, squaresLeft);
+
+			++squaresLeft;
 			board(spider.first, spider.second) = 0;
 			spider = savedSpiderLoc;
 		}
@@ -194,10 +130,12 @@ size_t countHSR(int sizex, int sizey,
 	
 	std::pair<int, int> spider{startx, starty};
 	board(spider.first, spider.second) = 1;
+
+	int squaresLeft = (board.width()*board.height()) - 2;
 	cout << "New one " << ++count << endl;
 	cout << endl;
 
-	return countHSR_recurse(board, finishx, finishy, spider);
+	return countHSR_recurse(board, finishx, finishy, spider, squaresLeft);
 }
 
 
