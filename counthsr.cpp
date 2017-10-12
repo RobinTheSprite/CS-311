@@ -2,7 +2,8 @@
 counthsr.cpp
 Mark Underwood
 10.4.17
-Contains definitions of functions for Holey Spider Runs problem.
+Contains definitions of functions for Holey Spider Runs problem,
+as well as definitions for Board class.
 */
 
 #include "counthsr.h"
@@ -14,6 +15,8 @@ using std::size_t;
 
 using boardType = vector<vector<int>>;
 
+//Board (4-param constructor)
+//Docs in counthsr.h
 Board::Board(int x, int y, int finishx, int finishy)
 {
 	_width = x;
@@ -39,31 +42,44 @@ Board::Board(int x, int y, int finishx, int finishy)
 	_board = board;
 }
 
+//op()
+//Docs in counthsr.h
 int & Board::operator()(int x, int y)
 {
 	return _board[y][x];
 }
 
+//width
+//Docs in counthsr.h
 size_t Board::width() const
 {
 	return _width;
 }
 
+//height
+//Docs in counthsr.h
 size_t Board::height() const
 {
 	return _height;
 }
 
+//finishx
+//Docs in counthsr.h
 int Board::finishx() const
 {
 	return _finishx;
 }
 
+//finishy
+//Docs in counthsr.h
 int Board::finishy() const
 {
 	return _finishy;
 }
 
+//countHSR_recurse
+//Finds how many "Holey Spider Runs" can be made with a given board.
+//Pre: Spider is within the bounds of the board.
 int countHSR_recurse(Board & board,  
 					std::pair<int, int> & spider,
 					int & squaresLeft)
@@ -75,6 +91,8 @@ int countHSR_recurse(Board & board,
 	} 
 	
 	//Recursive Case
+
+	//Define all the possible directions that spider could go from any given square.
 	std::vector<std::pair<int, int>> allPossibleDirections =
 	{	std::make_pair(spider.first, spider.second + 1),
 		std::make_pair(spider.first, spider.second - 1),
@@ -92,15 +110,18 @@ int countHSR_recurse(Board & board,
 
 	for (auto currentPair : allPossibleDirections)
 	{
+		//Can the spider move to the current position on the board?
 		if (board(currentPair.first, currentPair.second) == 0)
 		{
+			//Save the previous location of the spider, move it, and decrement the number of squares left.
 			auto savedSpiderLoc = spider;
 			spider = currentPair;
 			board(spider.first, spider.second) = 1;
 			--squaresLeft;
-		
-			numOfSols += countHSR_recurse(board, spider, squaresLeft);
+				
+			numOfSols += countHSR_recurse(board, spider, squaresLeft); //Recurse!
 			
+			//Undo the changes made before the recursive call.
 			++squaresLeft;
 			board(spider.first, spider.second) = 0;
 			spider = savedSpiderLoc;
@@ -110,11 +131,14 @@ int countHSR_recurse(Board & board,
 	return numOfSols;
 }
 
+//countHSR
+//Docs in counthsr.h
 int countHSR(int sizex, int sizey, 
-				int holex, int holey, 
-				int startx, int starty, 
-				int finishx, int finishy)			
+			 int holex, int holey, 
+			 int startx, int starty, 
+			 int finishx, int finishy)			
 {	
+	//Switch all values to 1-based coordinates.
 	++finishx;
 	++finishy;
 	++holex;
