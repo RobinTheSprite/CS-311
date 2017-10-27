@@ -4,9 +4,11 @@ Mark Underwood
 10.19.17
 Contains declarations and definitions for TSSArray class
 */
-
+#pragma warning (disable : 4996)
 #ifndef FILE_TSSARRAY_H_INCLUDED
 #define FILE_TSSARRAY_H_INCLUDED
+#include <algorithm>
+
 
 template <typename dataType>
 class TSSArray
@@ -44,8 +46,15 @@ public:
 		  _size(toBeCopied._size),
 		  _data(new value_type [_capacity])
 	{
-		#pragma warning(disable: 4996)
-		std::copy(toBeCopied.begin(), toBeCopied.end(), begin());
+		try
+		{
+			std::copy(toBeCopied.begin(), toBeCopied.end(), begin());
+		}
+		catch (...)
+		{
+			delete[] _data;
+			throw;
+		}
 	}
 
 	//Move Constructor
@@ -118,9 +127,19 @@ public:
 	{
 		if (newsize > _capacity)
 		{
-			TSSArray newarr(newsize);
-			std::copy(begin(), end(), newarr.begin());
-			*this = newarr;
+			size_type newCapacity;
+			value_type *  newData;
+
+			newCapacity = size_type(newsize * 2);
+			newData = new value_type[newCapacity];
+
+			std::copy(begin(), end(), newData);
+			delete[] _data;
+
+			_capacity = newCapacity;
+			_size = newsize;
+			_data = newData;
+			newData = nullptr;
 		}
 		else
 		{

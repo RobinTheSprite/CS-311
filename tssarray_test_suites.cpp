@@ -8,6 +8,8 @@
 // Uses the "Catch" unit-testing framework
 // Requires tssarray_test_main.cpp, catch.hpp, tssarray.h
 
+#pragma warning(disable : 4996)
+
 // Includes for code to be tested
 #include "tssarray.h"      // For class template TSSArray
 #include "tssarray.h"      // Double inclusion test
@@ -27,7 +29,7 @@ using std::move;
 using std::vector;
 #include <algorithm>
 using std::copy;
-using std::equal;
+//using std::equal;
 #include <stdexcept>
 using std::runtime_error;
 #include <cassert>
