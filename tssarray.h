@@ -26,7 +26,7 @@ public:	//Member Types and Constants
 	using iterator = value_type *;
 	using const_iterator = const value_type *;
 
-	const static size_type minimumCapacity = 16;
+	const static size_type minimumCapacity = size_type(16);
 public:
 
 	/**********Constructors***********/
@@ -261,6 +261,6 @@ private:
 	value_type * _data;
 	
 
-}; //End class TSSarray
+}; //End class TSSArray
 
 #endif // !FILE_TSSARRAY_H_INCLUDED
