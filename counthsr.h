@@ -40,7 +40,7 @@ public:
 	//Create a game board of a given size, with a given finish position marked.
 	//Pre: All parameters must be > 0. The finish position must be within the bounds of the board.
 	//Does not throw
-	Board::Board(int x, int y, int finishx, int finishy);
+	Board(int x, int y, int finishx, int finishy);
 
 	//op()
 	//Return the state of a specific space on the board.

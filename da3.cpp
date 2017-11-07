@@ -7,6 +7,7 @@ Contains definitions of various da3 functions.
 
 #include <functional>
 using std::function;
+#include <stdexcept>
 
 //callBetween
 //Documentation in header file

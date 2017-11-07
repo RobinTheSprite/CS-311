@@ -16,7 +16,7 @@ using std::function;
 using std::vector;
 #include <algorithm>
 #include <iterator>
-
+#include <stdexcept>
 
 // **************************************************************** // *
 // Begin DO-NOT-CHANGE section                                      // *
@@ -119,7 +119,7 @@ size_t uniqueCount(RAIter first,
 {
 	std::sort(first, last); //Get range ready for binary search
 
-	vector<std::iterator_traits<RAIter>::value_type> foundElements;
+	vector<typename std::iterator_traits<RAIter>::value_type> foundElements;
 	size_t uniqueFound = 0;
 
 	//Go through every element in the range

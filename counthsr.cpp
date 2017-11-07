@@ -93,16 +93,16 @@ int countHSR_recurse(Board & board,
 	//Recursive Case
 
 	//Define all the possible directions that spider could go from any given square.
-	std::vector<std::pair<int, int>> allPossibleDirections =
-	{	std::make_pair(spider.first, spider.second + 1),
+	std::pair<int, int> allPossibleDirections[8] =
+	{ std::make_pair(spider.first, spider.second + 1),
 		std::make_pair(spider.first, spider.second - 1),
-
+	
 		std::make_pair(spider.first + 1, spider.second),
 		std::make_pair(spider.first - 1, spider.second),
-
+	
 		std::make_pair(spider.first + 1, spider.second + 1),
 		std::make_pair(spider.first - 1, spider.second - 1),
-
+	
 		std::make_pair(spider.first - 1, spider.second + 1),
 		std::make_pair(spider.first + 1, spider.second - 1) };
 
