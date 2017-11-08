@@ -31,6 +31,9 @@ template <typename firstType, typename secondType>
 class LLMap
 {
 public:
+	LLMap() = default;
+
+	~LLMap() = default;
 
 	bool empty() const
 	{
@@ -53,65 +56,63 @@ public:
 
 	secondType * find(firstType key)
 	{
-		auto p = _head;
-		secondType * foundKey = nullptr;
-		while (p)
+		auto foundKey = findNode(key);
+		secondType * foundItem = nullptr;
+		if (foundKey != nullptr)
 		{
-			if (p->_data.first == key)
-			{
-				foundKey = &p->_data.second;
-				break;
-			}
-			p = p->_next;
+			foundItem = &foundKey->_data.second;
+			return foundItem;
 		}
-
-		return foundKey;
+		return nullptr;
 	}
 
 	const secondType * find(firstType key) const
 	{
-		auto p = _head;
-		secondType * foundKey = nullptr;
-		while (p)
-		{
-			if (p->_data.first == key)
-			{
-				foundKey = &p->_data.second;
-				break;
-			}
-			p = p->_next;
-		}
+		auto foundKey = findNode(key);
 
-		return foundKey;
+		return &foundKey->_data.second;
 	}
 
 	void insert(firstType key, secondType val)
 	{
-		auto foundKey = find(key);
+		auto foundKey = findNode(key);
 		if (foundKey == nullptr)
 		{
 			push_front(_head, std::make_pair(key, val));
 		}
 		else
 		{
-			_head->_data = std::make_pair(key, val);
+			foundKey->_data = std::make_pair(key, val);
 		}
 	}
 
 	void erase(firstType key)
 	{
-		auto foundKey = find(key);
+		auto foundKey = findNode(key);
 		if (foundKey != nullptr)
 		{
 			auto p = _head;
+			shared_ptr<LLNode2<std::pair<firstType, secondType>>> oneBack = nullptr;
 			while (p)
 			{
-				if (p->data.first == key)
+				if (p->_data.first == key)
 				{
-
+					break;
 				}
+				oneBack = p;
 				p = p->_next;
 			}
+
+			if (oneBack != nullptr)
+			{
+				oneBack->_next = p->_next;
+			}
+			else
+			{
+				pop_front(_head);
+			}
+			
+			foundKey->_next = nullptr;
 		}
 	}
 
@@ -126,6 +127,21 @@ public:
 	}
 
 private:
+	shared_ptr<LLNode2<std::pair<firstType, secondType>>> findNode(firstType key) const
+	{
+		auto p = _head;
+		while (p)
+		{
+			if (p->_data.first == key)
+			{
+				break;
+			}
+			p = p->_next;
+		}
+
+		return p;
+	}
+
 	shared_ptr<LLNode2<std::pair<firstType, secondType>>> _head;
 };
 
