@@ -10,11 +10,17 @@ Contains implementations for assn. 6 exercises
 
 #include <memory>
 #include <functional>
-#include <iostream>
 #include "llnode2.h"
 
+//***TODO: Check what can throw in everything
+
+//reverseList
+//Requirements on Types
+// -TODO
+//No Throw Guarantee
+//Exception Neutral
 template <typename dataType>
-void reverseList(std::shared_ptr<LLNode2<dataType>> & head)
+void reverseList(std::shared_ptr<LLNode2<dataType>> & head) noexcept
 {
 	std::shared_ptr<LLNode2<dataType>> backwardsHead;
 	while (head)
@@ -27,19 +33,40 @@ void reverseList(std::shared_ptr<LLNode2<dataType>> & head)
 	head = backwardsHead;
 }
 
+//LLMap
+//Invariants
+// -TODO
+//Requirements on Types
+// -TODO
 template <typename firstType, typename secondType>
 class LLMap
 {
 public:
+	//Deflault Functions
 	LLMap() = default;
-
 	~LLMap() = default;
 
+	//Deleted Functions
+	LLMap(const LLMap &) = delete;
+	LLMap(const LLMap &&) = delete;
+	LLMap & operator=(const LLMap &) = delete;
+	LLMap & operator=(const LLMap &&) = delete;
+
+	/*==============================================*/
+	/*             Misc. Member Functions			*/
+	/*==============================================*/
+
+	//empty
+	//No Throw Guarantee
+	//Exception Neutral
 	bool empty() const
 	{
 		return isEmpty(_head);
 	}
 
+	//size
+	//No Throw Guarantee
+	//Exception Neutral
 	size_t size() const
 	{
 		//Code copied from Glenn Chappell's da6.h
@@ -54,25 +81,35 @@ public:
 		return n;
 	}
 
+	//find (non-const)
+	//Strong Guarantee
+	//Exception Neutral
 	secondType * find(firstType key)
 	{
 		auto foundKey = findNode(key);
-		secondType * foundItem = nullptr;
 		if (foundKey != nullptr)
 		{
-			foundItem = &foundKey->_data.second;
-			return foundItem;
+			return &foundKey->_data.second;
 		}
 		return nullptr;
 	}
 
+	//find (const)
+	//Strong Guarantee
+	//Exception Neutral
 	const secondType * find(firstType key) const
 	{
 		auto foundKey = findNode(key);
-
-		return &foundKey->_data.second;
+		if (foundKey != nullptr)
+		{
+			return &foundKey->_data.second;
+		}
+		return nullptr;
 	}
 
+	//insert
+	//Strong Guarantee
+	//Exception Neutral
 	void insert(firstType key, secondType val)
 	{
 		auto foundKey = findNode(key);
@@ -86,13 +123,16 @@ public:
 		}
 	}
 
+	//erase
+	//Strong Guarantee
+	//Exception Neutral
 	void erase(firstType key)
 	{
 		auto foundKey = findNode(key);
 		if (foundKey != nullptr)
 		{
 			auto p = _head;
-			shared_ptr<LLNode2<std::pair<firstType, secondType>>> oneBack = nullptr;
+			ptrType oneBack = nullptr;
 			while (p)
 			{
 				if (p->_data.first == key)
@@ -116,6 +156,9 @@ public:
 		}
 	}
 
+	//traverse
+	//Strong Guarantee
+	//Exception Neutral
 	void traverse(std::function<void(firstType,secondType)> lambda)
 	{
 		auto p = _head;
@@ -127,7 +170,13 @@ public:
 	}
 
 private:
-	shared_ptr<LLNode2<std::pair<firstType, secondType>>> findNode(firstType key) const
+	//Useful shorthand for any pointer to the LLMap
+	using ptrType = shared_ptr<LLNode2<std::pair<firstType, secondType>>>;
+
+	//findNode
+	//Strong Guarantee
+	//Exception Neutral
+	ptrType findNode(firstType key) const
 	{
 		auto p = _head;
 		while (p)
@@ -142,7 +191,7 @@ private:
 		return p;
 	}
 
-	shared_ptr<LLNode2<std::pair<firstType, secondType>>> _head;
+	ptrType _head;
 };
 
 #endif // !FILE_DA6_H_INCLUDED
