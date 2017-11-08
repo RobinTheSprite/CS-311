@@ -34,14 +34,14 @@ public:
 
 	bool empty() const
 	{
-		return isEmpty(_data);
+		return isEmpty(_head);
 	}
 
-	int size() const
+	size_t size() const
 	{
 		//Code copied from Glenn Chappell's da6.h
 
-		auto p = _data;  // Iterates through list
+		auto p = _head;  // Iterates through list
 		size_t n = 0;   // Number of nodes so far
 		while (p)
 		{
@@ -53,31 +53,80 @@ public:
 
 	secondType * find(firstType key)
 	{
-		return nullptr;
+		auto p = _head;
+		secondType * foundKey = nullptr;
+		while (p)
+		{
+			if (p->_data.first == key)
+			{
+				foundKey = &p->_data.second;
+				break;
+			}
+			p = p->_next;
+		}
+
+		return foundKey;
 	}
 
 	const secondType * find(firstType key) const
 	{
-		return nullptr;
+		auto p = _head;
+		secondType * foundKey = nullptr;
+		while (p)
+		{
+			if (p->_data.first == key)
+			{
+				foundKey = &p->_data.second;
+				break;
+			}
+			p = p->_next;
+		}
+
+		return foundKey;
 	}
 
-	void insert(firstType, secondType)
+	void insert(firstType key, secondType val)
 	{
-
+		auto foundKey = find(key);
+		if (foundKey == nullptr)
+		{
+			push_front(_head, std::make_pair(key, val));
+		}
+		else
+		{
+			_head->_data = std::make_pair(key, val);
+		}
 	}
 
-	void erase(firstType)
+	void erase(firstType key)
 	{
+		auto foundKey = find(key);
+		if (foundKey != nullptr)
+		{
+			auto p = _head;
+			while (p)
+			{
+				if (p->data.first == key)
+				{
 
+				}
+				p = p->_next;
+			}
+		}
 	}
 
 	void traverse(std::function<void(firstType,secondType)> lambda)
 	{
-
+		auto p = _head;
+		while (p)
+		{
+			lambda(p->_data.first, p->_data.second);
+			p = p->_next;
+		}
 	}
 
 private:
-	shared_ptr<LLNode2<std::pair<firstType, secondType>>> _data;
+	shared_ptr<LLNode2<std::pair<firstType, secondType>>> _head;
 };
 
 #endif // !FILE_DA6_H_INCLUDED
