@@ -12,11 +12,9 @@ Contains implementations for assn. 6 exercises
 #include <functional>
 #include "llnode2.h"
 
-//***TODO: Check what can throw in everything
-
 //reverseList
 //Requirements on Types
-// -TODO
+// -None
 //No Throw Guarantee
 //Exception Neutral
 template <typename dataType>
@@ -34,10 +32,14 @@ void reverseList(std::shared_ptr<LLNode2<dataType>> & head) noexcept
 }
 
 //LLMap
+//Linked list that stores a key-value pair
 //Invariants
-// -TODO
+// -_head points to an LLNode2 object with a pair<firstType, secondType> as its data
 //Requirements on Types
-// -TODO
+// -firstType must have operator==, copy ctr, dtr
+// -firstType's dtr must not throw
+// -secondType must have copy ctr, dtr
+// -secondType's dtr must not throw
 template <typename firstType, typename secondType>
 class LLMap
 {
@@ -69,7 +71,7 @@ public:
 	//Exception Neutral
 	size_t size() const
 	{
-		//Code copied from Glenn Chappell's da6.h
+		//Code copied from Glenn Chappell's llnode2.h
 
 		auto p = _head;  // Iterates through list
 		size_t n = 0;   // Number of nodes so far
@@ -83,6 +85,7 @@ public:
 
 	//find (non-const)
 	//Strong Guarantee
+	//Throws if findNode throws
 	//Exception Neutral
 	secondType * find(firstType key)
 	{
@@ -96,6 +99,7 @@ public:
 
 	//find (const)
 	//Strong Guarantee
+	//Throws if findNode throws
 	//Exception Neutral
 	const secondType * find(firstType key) const
 	{
@@ -109,6 +113,7 @@ public:
 
 	//insert
 	//Strong Guarantee
+	//Throws if findNode throws
 	//Exception Neutral
 	void insert(firstType key, secondType val)
 	{
@@ -125,6 +130,7 @@ public:
 
 	//erase
 	//Strong Guarantee
+	//Throws if findNode throws
 	//Exception Neutral
 	void erase(firstType key)
 	{
@@ -158,6 +164,7 @@ public:
 
 	//traverse
 	//Strong Guarantee
+	//Throws if firstType or secondType operation throws
 	//Exception Neutral
 	void traverse(std::function<void(firstType,secondType)> lambda)
 	{
@@ -175,6 +182,7 @@ private:
 
 	//findNode
 	//Strong Guarantee
+	//Throws if firstType's operator== throws
 	//Exception Neutral
 	ptrType findNode(firstType key) const
 	{
