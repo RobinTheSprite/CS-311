@@ -39,7 +39,6 @@ using std::string;
 using std::sqrt;
 using std::floor;
 
-
 // *********************************************************************
 // Helper Functions/Classes for This Test Program
 // *********************************************************************

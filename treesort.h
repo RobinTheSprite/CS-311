@@ -9,107 +9,106 @@ Contains definitions for treesort algorithm
 #define FILE_TREESORT_H_INCLUDED
 
 #include <memory>
-using std::make_shared;
-#include <vector>
 #include <algorithm>
-#include <type_traits>
 #include <iterator>
-#include <iostream>
 
-template<typename dataType>
-struct Treenode
+namespace //Attempt to restrict use of these functions to just this file
 {
-	Treenode() = default;
-	Treenode(dataType data, std::shared_ptr<Treenode<dataType>> left, std::shared_ptr<Treenode<dataType>> right)
-		: _data(data), _left(left), _right(right) {}
 
-	~Treenode() = default;
-	Treenode(const Treenode &) = default;
-	Treenode & operator=(const Treenode &) = delete;
-	Treenode & operator=(const Treenode &&) = delete;
-
-	std::shared_ptr<Treenode<dataType>> _left;
-	std::shared_ptr<Treenode<dataType>> _right;
-	dataType _data;
-};
-
-template<typename dataType>
-std::shared_ptr<Treenode<dataType>> retrieve(dataType item, std::shared_ptr<Treenode<dataType>> & node)
-{
-	if (!node->_left && !node->_right)
+	template<typename dataType>
+	struct Treenode
 	{
-		return node;//make_shared<Treenode<dataType>>(*node);
-	}
+		Treenode() = default;
+		Treenode(dataType data, std::shared_ptr<Treenode<dataType>> left, std::shared_ptr<Treenode<dataType>> right)
+			: _data(data), _left(left), _right(right) {}
 
-	if (item < node->_data)
+		~Treenode() = default;
+		Treenode(const Treenode &) = delete;
+		Treenode(const Treenode &&) = delete;
+		Treenode & operator=(const Treenode &) = delete;
+		Treenode & operator=(const Treenode &&) = delete;
+
+		std::shared_ptr<Treenode<dataType>> _left;
+		std::shared_ptr<Treenode<dataType>> _right;
+		dataType _data;
+	};
+
+	template<typename dataType>
+	static std::shared_ptr<Treenode<dataType>> retrieve(dataType item, std::shared_ptr<Treenode<dataType>> & node)
 	{
-		if (!node->_left)
+		if (!node->_left && !node->_right)
 		{
 			return node;
 		}
-		return retrieve(item, node->_left);
-	}
-	else if (!(item < node->_data))
-	{
-		if (!node->_right)
-		{
-			return node;
-		}
-		return retrieve(item, node->_right);
-	}
-}
 
-template<typename dataType>
-void insert(dataType item, std::shared_ptr<Treenode<dataType>> & node)
-{
-	if (!node)
-	{
-		node = std::make_shared<Treenode<dataType>>(item, nullptr, nullptr);
-		return;
-	}
-
-	auto parent = retrieve(item, node);
-	if (parent)
-	{
-		if (!parent->_left && (item < parent->_data))
+		if (item < node->_data)
 		{
-			parent->_left = std::make_shared<Treenode<dataType>>(item, nullptr, nullptr);
+			if (!node->_left)
+			{
+				return node;
+			}
+			return retrieve(item, node->_left);
 		}
-		else if (!parent->_right && !(item < parent->_data))
+		else if (!(item < node->_data))
 		{
-			parent->_right = std::make_shared<Treenode<dataType>>(item, nullptr, nullptr);
+			if (!node->_right)
+			{
+				return node;
+			}
+			return retrieve(item, node->_right);
 		}
 	}
-}
 
-template<typename dataType>
-void remove(std::shared_ptr<Treenode<dataType>> & node)
-{
-	if (!node->_left && !node->_right)
+	template<typename dataType>
+	void insert(dataType item, std::shared_ptr<Treenode<dataType>> & node)
 	{
-		node = nullptr;
-		return;
+		if (!node)
+		{
+			node = std::make_shared<Treenode<dataType>>(item, nullptr, nullptr);
+			return;
+		}
+
+		auto parent = retrieve(item, node);
+		if (parent)
+		{
+			if (!parent->_left && (item < parent->_data))
+			{
+				parent->_left = std::make_shared<Treenode<dataType>>(item, nullptr, nullptr);
+			}
+			else if (!parent->_right && !(item < parent->_data))
+			{
+				parent->_right = std::make_shared<Treenode<dataType>>(item, nullptr, nullptr);
+			}
+		}
 	}
-	else if (!node->_left && node->_right)
+
+	template<typename dataType>
+	void remove(std::shared_ptr<Treenode<dataType>> & node)
 	{
-		node = node->_right;
-		return;
+		if (!node->_left && !node->_right)
+		{
+			node = nullptr;
+		}
+		else if (!node->_left && node->_right)
+		{
+			node = node->_right;
+		}
 	}
-}
 
-template<typename dataType, typename iter>
-void fromTree(iter & writeLocation, std::shared_ptr<Treenode<dataType>> & node)
-{
-	if (!node)
+	template<typename dataType, typename iter>
+	void fromTree(iter & writeLocation, std::shared_ptr<Treenode<dataType>> & node)
 	{
-		return;
+		if (!node)
+		{
+			return;
+		}
+
+		fromTree(writeLocation, node->_left);
+		*writeLocation++ = node->_data;
+		fromTree(writeLocation, node->_right);
+
+		remove(node);
 	}
-
-	fromTree(writeLocation, node->_left);
-	*writeLocation++ = node->_data;
-	fromTree(writeLocation, node->_right);
-
-	remove(node);
 }
 
 template<typename iter>
@@ -117,8 +116,8 @@ void treesort(iter first, iter last)
 {
 	using dataType = typename std::iterator_traits<iter>::value_type;
 
-	if (std::distance(first, last) == 0 || std::distance(first, last) == 1) //Range is zero or one? Don't even bother.
-	{
+	if (std::distance(first, last) == 0 || std::distance(first, last) == 1) //If the range is zero or one item long,
+	{																		//it is sorted already. Don't even bother.
 		return;
 	}
 
